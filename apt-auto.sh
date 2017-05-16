@@ -7,7 +7,7 @@ if [[ $EUID -ne 0 ]]; then
    exit 1
 fi
 
-echo "Started backup at $(date)."
+echo "Started update at $(date)."
 
 $APTBIN update
 $APTBIN -y upgrade
@@ -15,6 +15,6 @@ $APTBIN -y dist-upgrade
 $APTBIN -y autoremove
 $APTBIN -y autoclean
 
-echo "Completed backup at $(date)."
+echo "Completed update at $(date)."
 
 exit 0
