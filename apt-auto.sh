@@ -1,20 +1,26 @@
 #!/bin/bash
 
-APTBIN=/usr/bin/apt-get
+APT_BIN=/usr/bin/apt-get
 
-if [[ $EUID -ne 0 ]]; then
-   echo "This script must be run as root." 1>&2
-   exit 1
+if [[ ! $EUID -eq 0 ]];then
+  if [[ -x "$(command -v sudo)" ]]; then
+    exec sudo bash "$0" "$@"
+    exit $?
+  else
+    echo "This script must be run as root." 1>&2
+    exit 1
+  fi
 fi
 
-echo "Started update at $(date)."
+$APT_BIN update && \
+$APT_BIN -y upgrade && \
+$APT_BIN -y dist-upgrade && \
+$APT_BIN -y autoremove && \
+$APT_BIN -y autoclean
 
-$APTBIN update
-$APTBIN -y upgrade
-$APTBIN -y dist-upgrade
-$APTBIN -y autoremove
-$APTBIN -y autoclean
+if [[ ! $? -eq 0 ]]; then
+    echo "Error, update not completed successfully." 1>&2
+    exit 1
 
-echo "Completed update at $(date)."
-
+echo "Update completed successfully." 1>&2
 exit 0
